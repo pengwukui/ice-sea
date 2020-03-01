@@ -1,0 +1,19 @@
+{
+  "name": "ice-work",
+  "version": "0.0.7",
+  "description": "a tiny but powerfull framwork for javascript.",
+  "main": "dist/index.js",
+  "author": {
+    "name": "wukui"
+  },
+  "license": "ISC",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.2"
+  },
+  "dependencies": {
+    "autobind-decorator": "^2.4.0"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "experimentalDecorators": true,
+    "target": "es5",
+    "module": "es6",
+    "sourceMap": false,
+    "declaration": true,
+    "moduleResolution": "node"
+  },
+  "include": ["src"],
+  "exclude": ["dist", "node_modules"]
+}
