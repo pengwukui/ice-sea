@@ -1,6 +1,6 @@
 ## ice-sea
 
-ice-work 是一个超轻量级的 typescript 与 javascript 框架。框架仅仅提供有些用来简化你程序的工具，并没有限定你将如何组织你的代码。你可以自由的使用它。
+ice-sea 是一个超轻量级的 typescript 与 javascript 框架。框架仅仅提供有些用来简化你程序的工具，并没有限定你将如何组织你的代码。你可以自由的使用它。
 ice 的名字来源于 inject,command,event 三个单词。分别代表框架提供三种主要功能：依赖注入，命令处理，事件机制。
 
 ## Inject
@@ -112,6 +112,7 @@ class B {
 
 发送事件，只需要注册一个 dispatcher。dispatcher.dispath("hello")将发送一个名字为'hello'的事件。如果需要传递数据，可以这样：dispatcher.dispatch("hello",data)。侦听事件，推荐的做法是：首先，你要在 class 上加上@eventBind 装饰器，其次，在侦听器上面加上@eventListenenr("hello")装饰器，"hello"代表你需侦听的事件。你还可以在侦听器方法里配置参数，用来接受事件参数。你不必担心 this 的指向问题，框架已经帮你解决来这个问题，this 指向当前对象。
 你还可以指定作用空间。作用空间类似与命名空间，可以方式不同模块的同名事件互相污染。比如注册事件发送者 @eventDispathcer("ui")，就指定了一个名字叫 ui 的作用空间。注册侦听器 @eventListener("hello","ui")，第二参数就指定了 ui 作用空间。只有相同的作用空间对应的事件才会响应。默认情况下，所有的事件都注册到一个叫 root 的空间下，也就是说@eventDispatcher()等同于@eventDispathcher("root")
+
 还有一种方法可以注册事件侦听者。例如:
 
 ```typescript
@@ -131,6 +132,6 @@ class A {
     console.log("my click");
   }
 }
+```
 
 这种方式繁琐一点，但有但时候你可能会需要。
-```

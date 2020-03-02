@@ -1,6 +1,6 @@
 {
   "name": "ice-sea",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "description": "a tiny but powerfull framwork for javascript.",
   "main": "dist/index.js",
   "author": {
@@ -17,5 +17,14 @@
   "repository": {
     "type": "gitee",
     "url": "https://gitee.com/pengwukui/ice-work.git"
-  }
+  },
+  "keywords": [
+    "ice",
+    "framework",
+    "tiny",
+    "little",
+    "inject",
+    "command",
+    "event"
+  ]
 }
