@@ -37,3 +37,7 @@ export function inject(target, prop): any {
     }
   };
 }
+
+export function injectValues(values: string[]) {
+  return;
+}

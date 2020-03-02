@@ -1,5 +1,5 @@
 {
-  "name": "ice-work",
+  "name": "ice-sea",
   "version": "0.0.7",
   "description": "a tiny but powerfull framwork for javascript.",
   "main": "dist/index.js",
@@ -13,7 +13,9 @@
   "devDependencies": {
     "typescript": "^3.8.2"
   },
-  "dependencies": {
-    "autobind-decorator": "^2.4.0"
+  "dependencies": {},
+  "repository": {
+    "type": "gitee",
+    "url": "https://gitee.com/pengwukui/ice-work.git"
   }
 }

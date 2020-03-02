@@ -100,7 +100,13 @@ export function eventBind<T extends { new (...args: any[]): {} }>(
   return class extends constructor {
     constructor(...args) {
       let self: any = super();
-      let parent = self.__proto__.__proto__;
+      let parent;
+      while (self.__proto__ !== undefined) {
+        parent = self.__proto__;
+      }
+      if (!parent || !parent._eventBindList) {
+        return;
+      }
       let _eventBindList = parent._eventBindList;
       for (const item of _eventBindList) {
         let { event, dispatcher, funKey, once } = item;
