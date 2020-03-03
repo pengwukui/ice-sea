@@ -1,6 +1,6 @@
 {
   "name": "ice-sea",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "a tiny but powerfull framwork for javascript.",
   "main": "dist/index.js",
   "author": {

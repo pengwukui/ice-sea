@@ -27,4 +27,10 @@ export declare function eventBind<T extends {
 }>(constructor: T): {
     new (...args: any[]): {};
 } & T;
+/**
+ *
+ * @param event event name
+ * @param dispatcher the event dispather namespace
+ * @param once if true,event bind will auto removed after one handler
+ */
 export declare function eventListener(event: string, dispatcher?: string, once?: boolean): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;

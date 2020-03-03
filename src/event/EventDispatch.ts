@@ -97,17 +97,19 @@ export function eventDispatcher(name: string = "root") {
 export function eventBind<T extends { new (...args: any[]): {} }>(
   constructor: T
 ) {
+  let prototype = constructor.prototype;
+  if (!prototype.hasOwnProperty("_eventBindList")) {
+    return;
+  }
+
+  //取出原型链中数据
+  let _eventBindList = prototype._eventBindList;
+  //删除原型链中数据，防止污染
+  delete prototype._eventBindList;
   return class extends constructor {
     constructor(...args) {
-      let self: any = super();
-      let parent;
-      while (self.__proto__ !== undefined) {
-        parent = self.__proto__;
-      }
-      if (!parent || !parent._eventBindList) {
-        return;
-      }
-      let _eventBindList = parent._eventBindList;
+      super();
+
       for (const item of _eventBindList) {
         let { event, dispatcher, funKey, once } = item;
         let disp: IEventDispatcher;
@@ -124,11 +126,16 @@ export function eventBind<T extends { new (...args: any[]): {} }>(
           disp.addEventListener(event, this[funKey].bind(this), once);
         }
       }
-      delete parent._eventBindList;
     }
   };
 }
 
+/**
+ *
+ * @param event event name
+ * @param dispatcher the event dispather namespace
+ * @param once if true,event bind will auto removed after one handler
+ */
 export function eventListener(
   event: string,
   dispatcher: string = "root",
@@ -139,10 +146,11 @@ export function eventListener(
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    if (!target._eventBindList) {
+    if (!target.hasOwnProperty("_eventBindList")) {
       target._eventBindList = [];
     }
 
+    //将数据保存在原型链中
     target._eventBindList.push({
       event,
       dispatcher,

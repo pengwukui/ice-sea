@@ -6,3 +6,4 @@ export declare class Injector {
     private static valueMap;
 }
 export declare function inject(target: any, prop: any): any;
+export declare function injectValues(values: string[]): void;

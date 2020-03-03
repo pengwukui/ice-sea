@@ -34,3 +34,6 @@ export function inject(target, prop) {
         }
     };
 }
+export function injectValues(values) {
+    return;
+}
