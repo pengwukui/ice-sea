@@ -12,6 +12,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import { Injector } from "../inject/Injector";
+import "reflect-metadata";
 var EventDispatcher = /** @class */ (function () {
     function EventDispatcher() {
         this.eventMap = {};
@@ -80,15 +81,21 @@ export function eventDispatcher(name) {
         target[propertyKey] = dispatcher;
     };
 }
+/**
+ * bind event listeners
+ * @param constructor
+ */
 export function eventBind(constructor) {
+    var _eventBindList = [];
     var prototype = constructor.prototype;
-    if (!prototype.hasOwnProperty("_eventBindList")) {
-        return;
-    }
-    //取出原型链中数据
-    var _eventBindList = prototype._eventBindList;
-    //删除原型链中数据，防止污染
-    delete prototype._eventBindList;
+    var keys = Reflect.getOwnMetadataKeys(prototype);
+    keys.forEach(function (key) {
+        if (key.indexOf("event-") === 0) {
+            var data = Reflect.getOwnMetadata(key, prototype);
+            Reflect.deleteMetadata(key, prototype);
+            _eventBindList.push(data);
+        }
+    });
     return /** @class */ (function (_super) {
         __extends(class_1, _super);
         function class_1() {
@@ -120,7 +127,7 @@ export function eventBind(constructor) {
     }(constructor));
 }
 /**
- *
+ * add event listener,make sure add the class decorator [@eventBind]
  * @param event event name
  * @param dispatcher the event dispather namespace
  * @param once if true,event bind will auto removed after one handler
@@ -129,15 +136,12 @@ export function eventListener(event, dispatcher, once) {
     if (dispatcher === void 0) { dispatcher = "root"; }
     if (once === void 0) { once = false; }
     return function (target, propertyKey, descriptor) {
-        if (!target.hasOwnProperty("_eventBindList")) {
-            target._eventBindList = [];
-        }
-        //将数据保存在原型链中
-        target._eventBindList.push({
+        var obj = {
             event: event,
-            dispatcher: dispatcher,
+            dispatcher: dispatcher || "root",
             funKey: propertyKey,
             once: once
-        });
+        };
+        Reflect.defineMetadata("event-" + propertyKey, obj, target);
     };
 }

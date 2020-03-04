@@ -82,7 +82,8 @@ test.doit();
 //well done.
 ```
 
-当执行 Test 对象中的 `doit()` 方法，`DoAllJobCommand.excute()` 将自动执行。这样，你就可以将一系列的相关操作全部都放到一个 Command 里。一个 Command 对应要完成一件事情的全部操作的合集。
+当执行 Test 对象中的 `doit()` 方法，`DoAllJobCommand.excute()` 将自动执行。这样，你就可以将一系列的相关操作全部都放到一个 Command 里。一个 Command 对应要完成一件事情的全部操作的合集。Command 是一个一次性的短时对象，`comand.excute()` 每次执行都会生成一个新的 Command 对象。所以如果一个短时间内频繁的操作，应该考虑放到 Command 的内部实现，防止因为频繁调用 `comand.excute()` 而产生大量对象。
+
 你不是必须使用 Command，毕竟在实际使用中，你有自己的考量。
 
 ## Event
@@ -103,14 +104,14 @@ class A {
 //事件接收者
 @eventBind //eventBind 必须注册才能与eventListener配合使用。否则无效
 class B {
-  @eventListener("hello") // 注册事件侦听器
+  @eventListener("hello") //注册事件侦听器
   onHello() {
     console.log("say hello");
   }
 }
 ```
 
-发送事件，只需要注册一个 dispatcher。`dispatcher.dispath("hello")`将发送一个名字为'hello'的事件。如果需要传递数据，可以这样：`dispatcher.dispatch("hello",data)`。侦听事件，推荐的做法是：首先，你要在 class 上加上@eventBind 装饰器，其次，在侦听器上面加上 `@eventListenenr("hello")` 装饰器，"hello"代表你需侦听的事件。你还可以在侦听器方法里配置参数，用来接受事件参数。你不必担心 this 的指向问题，框架已经帮你解决来这个问题，this 指向当前对象。
+发送事件，只需要注册一个 dispatcher。`dispatcher.dispath("hello")`将发送一个名字为'hello'的事件。如果需要传递数据，可以这样：`dispatcher.dispatch("hello",data)`。侦听事件，推荐的做法是：首先，你要在 class 上加上@eventBind 装饰器，其次，在侦听器上面加上 `@eventListenenr("hello")` 装饰器，"hello"代表你需侦听的事件。你还可以在侦听器方法里配置参数，用来接受事件参数。你不必担心侦听器的 this 的指向问题，框架已经帮你解决来这个问题，this 指向当前对象。
 
 你还可以指定作用空间。作用空间类似与命名空间，可以方式不同模块的同名事件互相污染。比如注册事件发送者 `@eventDispathcer("ui")`，就指定了一个名字叫 ui 的作用空间。注册侦听器 `@eventListener("hello","ui")`，第二参数就指定了 ui 作用空间。只有相同的作用空间对应的事件才会响应。默认情况下，所有的事件都注册到一个叫 root 的空间下，也就是说 `@eventDispatcher()` 等同于 `@eventDispathcher("root")`
 

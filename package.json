@@ -13,7 +13,9 @@
   "devDependencies": {
     "typescript": "^3.8.2"
   },
-  "dependencies": {},
+  "dependencies": {
+    "reflect-metadata": "^0.1.13"
+  },
   "repository": {
     "type": "gitee",
     "url": "https://gitee.com/pengwukui/ice-work.git"

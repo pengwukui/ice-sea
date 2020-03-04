@@ -1,4 +1,5 @@
 import { Injector } from "../inject/Injector";
+import "reflect-metadata";
 
 export class EventDispatcher implements IEventDispatcher {
   private eventMap: { [key: string]: EventData[] } = {};
@@ -94,18 +95,24 @@ export function eventDispatcher(name: string = "root") {
   };
 }
 
+/**
+ * bind event listeners
+ * @param constructor
+ */
 export function eventBind<T extends { new (...args: any[]): {} }>(
   constructor: T
 ) {
+  let _eventBindList = [];
   let prototype = constructor.prototype;
-  if (!prototype.hasOwnProperty("_eventBindList")) {
-    return;
-  }
+  let keys = Reflect.getOwnMetadataKeys(prototype);
+  keys.forEach((key: string) => {
+    if (key.indexOf("event-") === 0) {
+      let data = Reflect.getOwnMetadata(key, prototype);
+      Reflect.deleteMetadata(key, prototype);
+      _eventBindList.push(data);
+    }
+  });
 
-  //取出原型链中数据
-  let _eventBindList = prototype._eventBindList;
-  //删除原型链中数据，防止污染
-  delete prototype._eventBindList;
   return class extends constructor {
     constructor(...args) {
       super();
@@ -131,7 +138,7 @@ export function eventBind<T extends { new (...args: any[]): {} }>(
 }
 
 /**
- *
+ * add event listener,make sure add the class decorator [@eventBind]
  * @param event event name
  * @param dispatcher the event dispather namespace
  * @param once if true,event bind will auto removed after one handler
@@ -146,16 +153,13 @@ export function eventListener(
     propertyKey: string,
     descriptor: PropertyDescriptor
   ) {
-    if (!target.hasOwnProperty("_eventBindList")) {
-      target._eventBindList = [];
-    }
-
-    //将数据保存在原型链中
-    target._eventBindList.push({
+    let obj = {
       event,
-      dispatcher,
+      dispatcher: dispatcher || "root",
       funKey: propertyKey,
       once
-    });
+    };
+
+    Reflect.defineMetadata("event-" + propertyKey, obj, target);
   };
 }
