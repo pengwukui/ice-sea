@@ -21,7 +21,8 @@ export class Injector {
 
   static getInject(key: string) {
     if (!this.isMapped(key)) {
-      throw new Error(`${key} haven't been injected.`);
+      //throw new Error(`${key} haven't been injected.`);
+      return null;
     }
 
     return this.valueMap[key];
@@ -30,14 +31,13 @@ export class Injector {
   private static valueMap: { [key: string]: any } = {};
 }
 
-export function inject(target, prop): any {
+export function inject(target, prop): PropertyDescriptor {
   return {
     get() {
       return Injector.getInject(prop);
-    }
+    },
+    set() {},
+    enumerable: true,
+    configurable: false
   };
-}
-
-export function injectValues(values: string[]) {
-  return;
 }

@@ -80,13 +80,15 @@ export interface EventData {
   handler: IEventHandler;
 }
 
+/**
+ * bind a event dispatcher.if not exist,then create one.
+ * @param name namespace,defualt is 'root'
+ */
 export function eventDispatcher(name: string = "root") {
   return function(target: any, propertyKey: string) {
     let injectName = "event_dispatcher_" + name;
-    let dispatcher;
-    try {
-      dispatcher = Injector.getInject(injectName);
-    } catch (error) {
+    let dispatcher = Injector.getInject(injectName);
+    if (!dispatcher) {
       dispatcher = new EventDispatcher();
       Injector.mapValue(injectName, dispatcher);
     }
@@ -115,15 +117,14 @@ export function eventBind<T extends { new (...args: any[]): {} }>(
 
   return class extends constructor {
     constructor(...args) {
-      super();
+      super(...args);
 
       for (const item of _eventBindList) {
         let { event, dispatcher, funKey, once } = item;
         let disp: IEventDispatcher;
         let injectName = "event_dispatcher_" + dispatcher;
-        try {
-          disp = Injector.getInject(injectName);
-        } catch (error) {
+        disp = Injector.getInject(injectName);
+        if (!disp) {
           //make sure this dispatcher is available.
           disp = new EventDispatcher();
           Injector.mapValue(injectName, disp);

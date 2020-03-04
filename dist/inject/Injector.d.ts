@@ -5,5 +5,4 @@ export declare class Injector {
     static getInject(key: string): any;
     private static valueMap;
 }
-export declare function inject(target: any, prop: any): any;
-export declare function injectValues(values: string[]): void;
+export declare function inject(target: any, prop: any): PropertyDescriptor;

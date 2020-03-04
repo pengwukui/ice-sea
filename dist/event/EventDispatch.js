@@ -66,15 +66,16 @@ var EventDispatcher = /** @class */ (function () {
     return EventDispatcher;
 }());
 export { EventDispatcher };
+/**
+ * bind a event dispatcher.if not exist,then create one.
+ * @param name namespace,defualt is 'root'
+ */
 export function eventDispatcher(name) {
     if (name === void 0) { name = "root"; }
     return function (target, propertyKey) {
         var injectName = "event_dispatcher_" + name;
-        var dispatcher;
-        try {
-            dispatcher = Injector.getInject(injectName);
-        }
-        catch (error) {
+        var dispatcher = Injector.getInject(injectName);
+        if (!dispatcher) {
             dispatcher = new EventDispatcher();
             Injector.mapValue(injectName, dispatcher);
         }
@@ -103,16 +104,14 @@ export function eventBind(constructor) {
             for (var _i = 0; _i < arguments.length; _i++) {
                 args[_i] = arguments[_i];
             }
-            var _this = _super.call(this) || this;
+            var _this = _super.apply(this, args) || this;
             for (var _a = 0, _eventBindList_1 = _eventBindList; _a < _eventBindList_1.length; _a++) {
                 var item = _eventBindList_1[_a];
                 var event_1 = item.event, dispatcher = item.dispatcher, funKey = item.funKey, once = item.once;
                 var disp = void 0;
                 var injectName = "event_dispatcher_" + dispatcher;
-                try {
-                    disp = Injector.getInject(injectName);
-                }
-                catch (error) {
+                disp = Injector.getInject(injectName);
+                if (!disp) {
                     //make sure this dispatcher is available.
                     disp = new EventDispatcher();
                     Injector.mapValue(injectName, disp);

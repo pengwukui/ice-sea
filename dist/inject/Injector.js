@@ -19,7 +19,8 @@ var Injector = /** @class */ (function () {
     };
     Injector.getInject = function (key) {
         if (!this.isMapped(key)) {
-            throw new Error(key + " haven't been injected.");
+            //throw new Error(`${key} haven't been injected.`);
+            return null;
         }
         return this.valueMap[key];
     };
@@ -31,9 +32,9 @@ export function inject(target, prop) {
     return {
         get: function () {
             return Injector.getInject(prop);
-        }
+        },
+        set: function () { },
+        enumerable: true,
+        configurable: false
     };
-}
-export function injectValues(values) {
-    return;
 }

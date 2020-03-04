@@ -125,11 +125,13 @@ class A {
   private dispatcher: IEventDipatcher;
 
   constructor() {
-    this.dispatcher.addEventLisenter("myClick", this.onMyClick.bind(this));
+    this.onMyClick = this.onMyClick.bind(this)
+    this.dispatcher.addEventLisenter("myClick", this.onMyClick);
   }
 
   onClick() {
     this.dispatcher.dispatch("myClick");
+    this.dispatcher.removeEventListener(("myClick", this.onMyClick);  //remove eventListenr
   }
 
   onMyClick() {
@@ -138,4 +140,4 @@ class A {
 }
 ```
 
-这种方式繁琐一点，但有的时候你可能会需要。
+这种方式繁琐一点，有的时候可能会需要灵活控制事件绑定与解绑。但使用装饰器的方式应该足以满足大部分需求。

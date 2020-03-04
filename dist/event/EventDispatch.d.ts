@@ -22,6 +22,10 @@ export interface EventData {
     once: boolean;
     handler: IEventHandler;
 }
+/**
+ * bind a event dispatcher.if not exist,then create one.
+ * @param name namespace,defualt is 'root'
+ */
 export declare function eventDispatcher(name?: string): (target: any, propertyKey: string) => void;
 /**
  * bind event listeners
