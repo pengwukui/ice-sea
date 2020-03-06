@@ -16,21 +16,19 @@ import { Injector } from "../inject/Injector";
 var EVENT_LISTENER_SYMBOL_KEY = "$eventListener";
 var EventDispatcher = /** @class */ (function () {
     function EventDispatcher() {
-        this.eventMap = {};
+        this.eventMap = new Map();
     }
     EventDispatcher.prototype.dispatch = function (event, data) {
-        if (!this.eventMap[event]) {
+        var events = this.eventMap.get(event);
+        if (!events) {
             return;
         }
-        var events = this.eventMap[event];
-        for (var index = events.length - 1; index >= 0; index--) {
-            var eventData = events[index];
-            eventData.data = data || null;
+        events.forEach(function (eventData) {
             eventData.handler(data);
             if (eventData.once) {
-                events.splice(index, 1);
+                events.delete(eventData);
             }
-        }
+        });
     };
     EventDispatcher.prototype.addEventListener = function (event, handler, once) {
         var data = {
@@ -40,29 +38,26 @@ var EventDispatcher = /** @class */ (function () {
             once: once,
             handler: handler
         };
-        if (!this.eventMap[event]) {
-            this.eventMap[event] = [];
+        var set = this.eventMap.get(event);
+        if (!set) {
+            set = new Set();
+            this.eventMap.set(event, set);
         }
-        this.eventMap[event].push(data);
+        set.add(data);
     };
     EventDispatcher.prototype.removeEventListener = function (event, handler) {
-        if (!this.eventMap[event]) {
+        var events = this.eventMap.get(event);
+        if (!events) {
             return;
         }
-        var events = this.eventMap[event];
-        for (var index = events.length - 1; index >= 0; index--) {
-            var eventData = events[index];
-            if (eventData.handler == handler) {
-                events.splice(index, 1);
-                break;
+        events.forEach(function (data) {
+            if (data.handler === handler) {
+                events.delete(data);
             }
-        }
+        });
     };
     EventDispatcher.prototype.removeEventListeners = function (event) {
-        if (!this.eventMap[event]) {
-            return;
-        }
-        this.eventMap[event] = [];
+        this.eventMap.delete(event);
     };
     return EventDispatcher;
 }());

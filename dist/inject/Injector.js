@@ -9,22 +9,23 @@ var Injector = /** @class */ (function () {
         if (this.isMapped(key) && !override) {
             throw new Error("inject value fail!,key=" + key + " is already injected.");
         }
-        this.valueMap[key] = value;
+        this.valueMap.set(key, value);
     };
     Injector.destroy = function () {
-        this.valueMap = {};
+        this.valueMap.clear();
+        this.valueMap = null;
     };
     Injector.isMapped = function (key) {
-        return Boolean(this.valueMap[key]);
+        return this.valueMap.has(key);
     };
     Injector.getInject = function (key) {
         if (!this.isMapped(key)) {
             //throw new Error(`${key} haven't been injected.`);
             return null;
         }
-        return this.valueMap[key];
+        return this.valueMap.get(key);
     };
-    Injector.valueMap = {};
+    Injector.valueMap = new Map();
     return Injector;
 }());
 export { Injector };

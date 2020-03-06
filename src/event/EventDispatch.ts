@@ -4,21 +4,18 @@ import { Injector } from "../inject/Injector";
 const EVENT_LISTENER_SYMBOL_KEY = "$eventListener";
 
 export class EventDispatcher implements IEventDispatcher {
-    private eventMap: { [key: string]: EventData[] } = {};
+    private eventMap: Map<string, Set<EventData>> = new Map();
     public dispatch(event: string, data?: any): void {
-        if (!this.eventMap[event]) {
+        let events = this.eventMap.get(event)
+        if (!events) {
             return;
         }
-
-        let events = this.eventMap[event];
-        for (let index = events.length - 1; index >= 0; index--) {
-            const eventData = events[index];
-            eventData.data = data || null;
+        events.forEach(eventData => {
             eventData.handler(data);
             if (eventData.once) {
-                events.splice(index, 1);
+                events.delete(eventData)
             }
-        }
+        });
     }
 
     public addEventListener(
@@ -34,32 +31,28 @@ export class EventDispatcher implements IEventDispatcher {
             handler: handler
         };
 
-        if (!this.eventMap[event]) {
-            this.eventMap[event] = [];
+        let set = this.eventMap.get(event);
+        if (!set) {
+            set = new Set();
+            this.eventMap.set(event, set);
         }
-
-        this.eventMap[event].push(data);
+        set.add(data);
     }
     public removeEventListener(event: string, handler: IEventHandler): void {
-        if (!this.eventMap[event]) {
+        let events = this.eventMap.get(event);
+        if (!events) {
             return;
         }
 
-        let events = this.eventMap[event];
-        for (let index = events.length - 1; index >= 0; index--) {
-            const eventData = events[index];
-            if (eventData.handler == handler) {
-                events.splice(index, 1);
-                break;
+        events.forEach((data) => {
+            if (data.handler === handler) {
+                events.delete(data)
             }
-        }
+        })
     }
-    public removeEventListeners(event: string): void {
-        if (!this.eventMap[event]) {
-            return;
-        }
 
-        this.eventMap[event] = [];
+    public removeEventListeners(event: string): void {
+        this.eventMap.delete(event)
     }
 }
 

@@ -8,15 +8,16 @@ export class Injector {
             throw new Error(`inject value fail!,key=${key} is already injected.`);
         }
 
-        this.valueMap[key] = value;
+        this.valueMap.set(key, value)
     }
 
     static destroy() {
-        this.valueMap = {};
+        this.valueMap.clear();
+        this.valueMap = null;
     }
 
     static isMapped(key: string): boolean {
-        return Boolean(this.valueMap[key]);
+        return this.valueMap.has(key)
     }
 
     static getInject(key: string) {
@@ -25,10 +26,10 @@ export class Injector {
             return null;
         }
 
-        return this.valueMap[key];
+        return this.valueMap.get(key)
     }
 
-    private static valueMap: { [key: string]: any } = {};
+    private static valueMap: Map<string, any> = new Map();
 }
 
 export function inject(target, prop): PropertyDescriptor {
