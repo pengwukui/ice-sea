@@ -2,12 +2,12 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "target": "es5",
     "module": "es6",
     "sourceMap": false,
     "declaration": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "lib": ["ES2015"]
   },
   "include": ["src"],
   "exclude": ["dist", "node_modules"]

@@ -1,4 +1,3 @@
-import "reflect-metadata";
 export declare class EventDispatcher implements IEventDispatcher {
     private eventMap;
     dispatch(event: string, data?: any): void;
