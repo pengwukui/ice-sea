@@ -26,6 +26,7 @@ export interface EventData {
  * @param name namespace,defualt is 'root'
  */
 export declare function eventDispatcher(name?: string): (target: any, propertyKey: string) => void;
+export declare function dispatchEvent(event: string, channel?: string): (target: any, propertyKey: string, descriptor: PropertyDescriptor) => void;
 /**
  * bind event listeners
  * @param constructor

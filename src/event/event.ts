@@ -1,7 +1,8 @@
-import { Injector } from "../inject/Injector";
+import { Injector } from "../inject/inject";
 //import "reflect-metadata";
 
 const EVENT_LISTENER_SYMBOL_KEY = "$eventListener";
+const EVENT_DISPATCHER_KEY = "event_dispatcher_";
 
 export class EventDispatcher implements IEventDispatcher {
     private eventMap: Map<string, Set<EventData>> = new Map();
@@ -77,11 +78,11 @@ export interface EventData {
 
 /**
  * bind a event dispatcher.if not exist,then create one.
- * @param name namespace,defualt is 'root'
+ * @param channel channel as namespace,defualt is 'root'
  */
-export function eventDispatcher(name: string = "root") {
+export function eventDispatcher(channel: string = "root") {
     return function (target: any, propertyKey: string) {
-        let injectName = "event_dispatcher_" + name;
+        let injectName = EVENT_DISPATCHER_KEY + channel;
         let dispatcher = Injector.getInject(injectName);
         if (!dispatcher) {
             dispatcher = new EventDispatcher();
@@ -90,6 +91,32 @@ export function eventDispatcher(name: string = "root") {
 
         target[propertyKey] = dispatcher;
     };
+}
+
+/**
+ * auto diapacher an event,when this method called.
+ * @param event the event name
+ * @param channel channel as namespace,defualt is 'root'
+ */
+export function eventPublisher(event: string, channel: string = 'root') {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        let fun = descriptor.value;
+        if (typeof fun !== "function") {
+            return;
+        }
+        let injectName = EVENT_DISPATCHER_KEY + channel
+        let disp: IEventDispatcher = Injector.getInject(injectName);
+        if (!disp) {
+            //make sure this dispatcher is available.
+            disp = new EventDispatcher();
+            Injector.mapValue(injectName, disp);
+        }
+
+        descriptor.value = (...args) => {
+            let result = fun(...args);
+            disp.dispatch(event, result)
+        }
+    }
 }
 
 /**
@@ -104,17 +131,6 @@ export function eventBind<T extends { new(...args: any[]): {} }>(
     let _eventBindList = constructor.prototype[symbol] || [];
     delete constructor.prototype[symbol];
 
-
-    // let prototype = constructor.prototype;
-    // let keys = Reflect.getOwnMetadataKeys(prototype);
-    // keys.forEach((key: string) => {
-    //     if (key.indexOf("event-") === 0) {
-    //         let data = Reflect.getOwnMetadata(key, prototype);
-    //         Reflect.deleteMetadata(key, prototype);
-    //         _eventBindList.push(data);
-    //     }
-    // });
-
     return class extends constructor {
         constructor(...args) {
             super(...args);
@@ -122,7 +138,7 @@ export function eventBind<T extends { new(...args: any[]): {} }>(
             for (const item of _eventBindList) {
                 let { event, dispatcher, funKey, once } = item;
                 let disp: IEventDispatcher;
-                let injectName = "event_dispatcher_" + dispatcher;
+                let injectName = EVENT_DISPATCHER_KEY + dispatcher;
                 disp = Injector.getInject(injectName);
                 if (!disp) {
                     //make sure this dispatcher is available.

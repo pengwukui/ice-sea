@@ -14,6 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 import { Injector } from "../inject/Injector";
 //import "reflect-metadata";
 var EVENT_LISTENER_SYMBOL_KEY = "$eventListener";
+var EVENT_DISPATCHER_KEY = "event_dispatcher_";
 var EventDispatcher = /** @class */ (function () {
     function EventDispatcher() {
         this.eventMap = new Map();
@@ -69,13 +70,35 @@ export { EventDispatcher };
 export function eventDispatcher(name) {
     if (name === void 0) { name = "root"; }
     return function (target, propertyKey) {
-        var injectName = "event_dispatcher_" + name;
+        var injectName = EVENT_DISPATCHER_KEY + name;
         var dispatcher = Injector.getInject(injectName);
         if (!dispatcher) {
             dispatcher = new EventDispatcher();
             Injector.mapValue(injectName, dispatcher);
         }
         target[propertyKey] = dispatcher;
+    };
+}
+export function dispatchEvent(event, channel) {
+    if (channel === void 0) { channel = 'root'; }
+    return function (target, propertyKey, descriptor) {
+        var fun = target[propertyKey];
+        if (typeof fun !== "function") {
+            return;
+        }
+        var injectName = EVENT_DISPATCHER_KEY + channel;
+        var disp = Injector.getInject(injectName);
+        if (!disp) {
+            //make sure this dispatcher is available.
+            disp = new EventDispatcher();
+            Injector.mapValue(injectName, disp);
+        }
+        descriptor.get = function () {
+            return function () {
+                var result = fun();
+                disp.dispatch(event, result);
+            };
+        };
     };
 }
 /**
@@ -89,15 +112,6 @@ export function eventBind(constructor) {
     }
     var _eventBindList = constructor.prototype[symbol] || [];
     delete constructor.prototype[symbol];
-    // let prototype = constructor.prototype;
-    // let keys = Reflect.getOwnMetadataKeys(prototype);
-    // keys.forEach((key: string) => {
-    //     if (key.indexOf("event-") === 0) {
-    //         let data = Reflect.getOwnMetadata(key, prototype);
-    //         Reflect.deleteMetadata(key, prototype);
-    //         _eventBindList.push(data);
-    //     }
-    // });
     return /** @class */ (function (_super) {
         __extends(class_1, _super);
         function class_1() {
@@ -110,7 +124,7 @@ export function eventBind(constructor) {
                 var item = _eventBindList_1[_a];
                 var event = item.event, dispatcher = item.dispatcher, funKey = item.funKey, once = item.once;
                 var disp = void 0;
-                var injectName = "event_dispatcher_" + dispatcher;
+                var injectName = EVENT_DISPATCHER_KEY + dispatcher;
                 disp = Injector.getInject(injectName);
                 if (!disp) {
                     //make sure this dispatcher is available.

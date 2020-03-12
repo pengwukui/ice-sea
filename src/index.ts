@@ -1,3 +1,3 @@
-export * from "./inject/Injector";
-export * from "./command/Command";
-export * from "./event/EventDispatch";
+export * from "./inject/inject";
+export * from "./command/command";
+export * from "./event/event";
