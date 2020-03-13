@@ -15,8 +15,8 @@
   },
   "dependencies": {},
   "repository": {
-    "type": "gitee",
-    "url": "https://gitee.com/pengwukui/ice-work.git"
+    "type": "git",
+    "url": "https://github.com/pengwukui/ice-sea"
   },
   "keywords": [
     "ice",
